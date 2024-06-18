@@ -1,0 +1,52 @@
+import numpy as np
+import math
+
+# Randomly generated parameters
+np.random.seed(0)  # For reproducibility
+a1, b1, c1 = np.random.rand(3)
+a2, b2, c2 = np.random.rand(3)
+point = np.random.rand(2)
+
+# Equation of the lines: a1*x + b1*y + c1 = 0 and a2*x + b2*y + c2 = 0
+# Point (px, py)
+px, py = point
+
+# Function to calculate the distance from a point to a line
+def distance_point_to_line(a, b, c, x, y):
+    return abs(a*x + b*y + c) / math.sqrt(a**2 + b**2)
+
+# Distance from point to each line
+d1 = distance_point_to_line(a1, b1, c1, px, py)
+d2 = distance_point_to_line(a2, b2, c2, px, py)
+
+# Finding the intersection point of the two lines
+A = np.array([[a1, b1], [a2, b2]])
+B = np.array([-c1, -c2])
+
+if np.linalg.det(A) != 0:
+    intersection = np.linalg.solve(A, B)
+else:
+    intersection = None
+
+# Distance from point to the intersection of the lines
+if intersection is not None:
+    ix, iy = intersection
+    distance_to_intersection = np.sqrt((ix - px)**2 + (iy - py)**2)
+else:
+    distance_to_intersection = None
+
+# Angle between the lines
+dot_product = a1*a2 + b1*b2
+magnitude1 = np.sqrt(a1**2 + b1**2)
+magnitude2 = np.sqrt(a2**2 + b2**2)
+cos_theta = dot_product / (magnitude1 * magnitude2)
+angle = np.arccos(cos_theta)
+
+print("Distance from point to line 1:", d1)
+print("Distance from point to line 2:", d2)
+if intersection is not None:
+    print("Intersection point of the lines:", intersection)
+    print("Distance from point to intersection:", distance_to_intersection)
+else:
+    print("The lines do not intersect.")
+print("Angle between the lines (in degrees):", np.degrees(angle))
