@@ -1,0 +1,75 @@
+import numpy as np
+
+def solve_tridiagonal(a, b, c, d):
+    n = len(d)
+    cp = np.zeros(n - 1)
+    dp = np.zeros(n)
+    
+    cp[0] = c[0] / b[0]
+    dp[0] = d[0] / b[0]
+    
+    for i in range(1, n - 1):
+        denom = b[i] - a[i - 1] * cp[i - 1]
+        cp[i] = c[i] / denom
+        dp[i] = (d[i] - a[i - 1] * dp[i - 1]) / denom
+        
+    dp[n - 1] = (d[n - 1] - a[n - 2] * dp[n - 2]) / (b[n - 1] - a[n - 2] * cp[n - 2])
+    
+    x = np.zeros(n)
+    x[n - 1] = dp[n - 1]
+    
+    for i in range(n - 2, -1, -1):
+        x[i] = dp[i] - cp[i] * x[i + 1]
+        
+    return x
+
+def cubic_spline(x, y, x_star):
+    n = len(x) - 1
+    h = np.diff(x)
+    alpha = np.zeros(n)
+    
+    for i in range(1, n):
+        alpha[i] = (3/h[i] * (y[i + 1] - y[i]) - 3/h[i - 1] * (y[i] - y[i - 1]))
+    
+    l = np.ones(n + 1)
+    mu = np.zeros(n)
+    z = np.zeros(n + 1)
+    
+    for i in range(1, n):
+        l[i] = 2 * (x[i + 1] - x[i - 1]) - h[i - 1] * mu[i - 1]
+        mu[i] = h[i] / l[i]
+        z[i] = (alpha[i] - h[i - 1] * z[i - 1]) / l[i]
+    
+    c = np.zeros(n + 1)
+    b = np.zeros(n)
+    d = np.zeros(n)
+    
+    for j in range(n - 1, -1, -1):
+        c[j] = z[j] - mu[j] * c[j + 1]
+        b[j] = (y[j + 1] - y[j]) / h[j] - h[j] * (c[j + 1] + 2 * c[j]) / 3
+        d[j] = (c[j + 1] - c[j]) / (3 * h[j])
+    
+    a = y[:-1]
+    
+    # Find the interval where x_star lies
+    idx = -1
+    for i in range(n):
+        if x_star >= x[i] and x_star <= x[i + 1]:
+            idx = i
+            break
+    
+    if idx != -1:
+        dx = x_star - x[idx]
+        result = a[idx] + b[idx] * dx + c[idx] * dx**2 + d[idx] * dx**3
+        return result
+    else:
+        return None
+
+# Given data points
+xi = np.array([0.0, 1.0, 2.0, 3.0, 4.0])
+yi = np.array([0.0, 0.5, 0.86603, 1.0, 0.86603])
+
+# Evaluate the spline at x* = 1.5
+x_star = 1.5
+y_star = cubic_spline(xi, yi, x_star)
+print(f"Value of the function at x* = {x_star}: {y_star:.5f}")
