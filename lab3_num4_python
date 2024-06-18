@@ -1,0 +1,17 @@
+import math
+
+def compute_series_sum(x, tolerance=1e-6):
+    sum_series = 0
+    k = 1
+    while True:
+        term = (-1)**k / (math.sin(k * x) + 24 + k**2)
+        sum_series += term
+        if abs(term) < tolerance:
+            break
+        k += 1
+    return sum_series
+
+# Test the function with a value of x
+x = 1.0  # You can change this value to test different inputs
+result = compute_series_sum(x)
+print(f"The sum of the series for x = {x} is approximately {result:.6f}")
