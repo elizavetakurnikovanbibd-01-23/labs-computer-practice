@@ -1,0 +1,57 @@
+#include <iostream>
+#include <cmath>
+#include <cstdlib>
+#include <ctime>
+
+using namespace std;
+
+struct Point {
+    double x, y;
+};
+
+// Function to check if a point is on the ellipse
+bool isPointOnEllipse(Point p, double a, double b) {
+    return pow(p.x / a, 2) + pow(p.y / b, 2) <= 1.0;
+}
+
+// Function to calculate the focal distance
+double calculateFocalDistance(double a, double b) {
+    return sqrt(a * a - b * b);
+}
+
+// Function to calculate the eccentricity
+double calculateEccentricity(double a, double b) {
+    return sqrt(1 - (b * b) / (a * a));
+}
+
+int main() {
+    srand(time(0));
+    
+    // Randomly generated parameters
+    double a = rand() % 10 + 1;  // semi-major axis
+    double b = rand() % 10 + 1;  // semi-minor axis
+    Point p = {static_cast<double>(rand() % 20 - 10), static_cast<double>(rand() % 20 - 10)};
+    
+    cout << "Ellipse parameters: a = " << a << ", b = " << b << endl;
+    cout << "Point coordinates: (" << p.x << ", " << p.y << ")" << endl;
+
+    // Check if point is on the ellipse
+    bool onEllipse = isPointOnEllipse(p, a, b);
+    cout << "Does the point lie on the ellipse? " << (onEllipse ? "Yes" : "No") << endl;
+
+    // Calculate focal points
+    double c = calculateFocalDistance(a, b);
+    Point f1 = {-c, 0};
+    Point f2 = {c, 0};
+    cout << "Focal points: (" << f1.x << ", " << f1.y << "), (" << f2.x << ", " << f2.y << ")" << endl;
+
+    // Calculate eccentricity
+    double e = calculateEccentricity(a, b);
+    cout << "Eccentricity: " << e << endl;
+
+    // Calculate the distance from the directrix to the center
+    double directrix_distance = a / e;
+    cout << "Distance from directrix to center: " << directrix_distance << endl;
+
+    return 0;
+}
