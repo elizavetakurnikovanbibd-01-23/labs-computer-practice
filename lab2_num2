@@ -1,0 +1,35 @@
+import numpy as np
+
+# Randomly generated coordinates of the vectors
+np.random.seed(1)  # For reproducibility
+vector1 = np.random.rand(3)
+vector2 = np.random.rand(3)
+
+# Vector lengths
+length1 = np.linalg.norm(vector1)
+length2 = np.linalg.norm(vector2)
+
+# Angle between vectors
+dot_product = np.dot(vector1, vector2)
+cos_theta = dot_product / (length1 * length2)
+angle = np.arccos(np.clip(cos_theta, -1.0, 1.0))
+
+# Vector sum and difference
+vector_sum = np.add(vector1, vector2)
+vector_difference = np.subtract(vector1, vector2)
+
+# Check if vectors are parallel
+parallel = np.allclose(np.cross(vector1, vector2), 0)
+
+# Vector cross product
+cross_product = np.cross(vector1, vector2)
+
+print("Vector 1:", vector1)
+print("Vector 2:", vector2)
+print("Length of vector 1:", length1)
+print("Length of vector 2:", length2)
+print("Angle between vectors (in degrees):", np.degrees(angle))
+print("Sum of vectors:", vector_sum)
+print("Difference of vectors:", vector_difference)
+print("Are vectors parallel?:", parallel)
+print("Cross product of vectors:", cross_product)
