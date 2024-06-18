@@ -1,67 +1,69 @@
 import math
 
+EPSILON = 1e-6
+
 def f(x):
     return math.log(x) + (x + 1)**3
 
-def g(x):
-    return math.exp(- (x + 1)**3)
+def df(x):
+    return 1 / x + 3 * (x + 1)**2
 
-def iteration_method(x0, tol, max_iterations):
-    x = x0
-    for i in range(max_iterations):
-        x_new = g(x)
-        if abs(x_new - x) < tol:
-            return x_new
-        x = x_new
-    return None
+def ddf(x):
+    return -1 / (x * x) + 6 * (x + 1)
 
-root_iteration = iteration_method(0.5, 1e-6, 1000)
-print(f"Корень методом итераций: {root_iteration}")
-
-def bisection_method(a, b, tol):
-    if f(a) * f(b) >= 0:
-        print("Неверный выбор начальных точек a и b.")
-        return None
-    while (b - a) / 2.0 > tol:
-        midpoint = (a + b) / 2.0
-        if f(midpoint) == 0:
-            return midpoint
-        elif f(a) * f(midpoint) < 0:
-            b = midpoint
+# Метод дихотомии
+def bisection(a, b):
+    while (b - a) / 2.0 > EPSILON:
+        c = (a + b) / 2.0
+        if f(c) == 0.0:
+            break
+        elif f(c) * f(a) < 0:
+            b = c
         else:
-            a = midpoint
+            a = c
     return (a + b) / 2.0
 
-def secant_method(x0, x1, tol, max_iterations):
-    for i in range(max_iterations):
-        if f(x0) == f(x1):
-            return None
-        x2 = x1 - f(x1) * (x1 - x0) / (f(x1) - f(x0))
-        if abs(x2 - x1) < tol:
-            return x2
-        x0, x1 = x1, x2
-    return None
-
-def f_prime(x):
-    return 1/x + 3 * (x + 1)**2
-
-def newton_method(x0, tol, max_iterations):
+# Метод итераций
+def iteration(x0):
     x = x0
-    for i in range(max_iterations):
-        x_new = x - f(x) / f_prime(x)
-        if abs(x_new - x) < tol:
-            return x_new
-        x = x_new
-    return None
+    while True:
+        x_next = x - f(x) / df(x)
+        if abs(x_next - x) < EPSILON:
+            break
+        x = x_next
+    return x
 
-root_bisection = bisection_method(0.1, 1, 1e-6)
-print(f"Корень методом дихотомии: {root_bisection}")
+# Метод хорд
+def secant(a, b):
+    fa = f(a)
+    fb = f(b)
+    while abs(b - a) > EPSILON:
+        c = a - fa * (b - a) / (fb - fa)
+        if abs(f(c)) < EPSILON:
+            break
+        a, fa = b, fb
+        b, fb = c, f(c)
+    return c
 
-root_iteration = iteration_method(0.5, 1e-6, 1000)
-print(f"Корень методом итераций: {root_iteration}")
+# Метод Ньютона
+def newton(x0):
+    x = x0
+    while True:
+        x_next = x - f(x) / df(x)
+        if abs(x_next - x) < EPSILON:
+            break
+        x = x_next
+    return x
 
-root_secant = secant_method(0.1, 1, 1e-6, 1000)
-print(f"Корень методом хорд: {root_secant}")
+if __name__ == "__main__":
+    # Для метода дихотомии нужно выбрать интервал, где функция меняет знак
+    a, b = 0.1, 1.0  # интервал [a, b] для метода дихотомии
+    print("Bisection method:", bisection(a, b))
 
-root_newton = newton_method(0.5, 1e-6, 1000)
-print(f"Корень методом Ньютона: {root_newton}")
+    # Для метода итераций и Ньютона нужно выбрать начальное приближение
+    x0 = 0.5
+    print("Iteration method:", iteration(x0))
+    print("Newton method:", newton(x0))
+
+    # Для метода хорд также нужно выбрать интервал, где функция меняет знак
+    print("Secant method:", secant(a, b))
